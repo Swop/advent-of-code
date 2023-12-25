@@ -1,0 +1,46 @@
+run:
+  go: "1.21"
+  concurrency: 16
+  timeout: 5m
+  issues-exit-code: 1
+  tests: true
+  build-tags: []
+  skip-files:
+    - .*.pb.go
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+linters-settings:
+  tagliatelle:
+    case:
+      rules:
+        json: snake
+        yaml: snake
+linters:
+  enable:
+    - errcheck
+    - goconst
+    - revive
+    - ineffassign
+    - misspell
+    - unconvert
+    - govet
+    - typecheck
+    - exportloopref
+    - gofumpt
+    - goimports
+    - gocritic
+    - gci
+    - gocognit
+    - gosimple
+    - staticcheck
+    - tagliatelle
+    - unused
+    - gosec
+  disable:
+    - unparam
+    - depguard
+
+issues:
+  fix: true

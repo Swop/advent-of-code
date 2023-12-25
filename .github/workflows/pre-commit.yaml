@@ -1,0 +1,56 @@
+name: pre-commit
+on:
+  pull_request:
+  push:
+env:
+  PRE_COMMIT_VERSION: 3.6.0
+  SKIP_CHECKS: "go-lint,go-test"
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+      - name: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: python-cache
+        uses: actions/cache@v3
+        id: python-cache
+        with:
+          path: ${{ env.pythonLocation }}
+          key: pre-commit-${{ env.pythonLocation }}
+          restore-keys: |
+            pre-commit-${{ env.pythonLocation }}
+      - name: pre-commit-install
+        if: steps.python-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          python -m pip install pre-commit==${{ env.PRE_COMMIT_VERSION }}
+          python -m pip freeze --local
+      - name: pre-commit-cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ env.pythonLocation }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            pre-commit-${{ env.pythonLocation }}-${{ hashFiles('.pre-commit-config.yaml') }}
+      - name: pre-commit-run
+        id: pre-commit
+        env:
+          BRANCH: ${{ github.ref_name }}
+          SKIP: ${{ env.SKIP_CHECKS }}
+        shell: bash
+        run: |
+          LOGS=$(mktemp)
+          if ! pre-commit run --show-diff-on-failure --color=always --all-files 2>&1 > "$LOGS"; then
+            err=1
+          fi
+          cat "$LOGS"
+          echo "passed=$(grep Passed -o < "$LOGS" | wc -l | sed 's/ //g' | tr -d '\n')" >> $GITHUB_OUTPUT
+          echo "failed=$(grep Failed -o < "$LOGS" | wc -l | sed 's/ //g' | tr -d '\n')" >> $GITHUB_OUTPUT
+          echo "skipped=$(grep Skipped -o < "$LOGS" | wc -l | sed 's/ //g' | tr -d '\n')" >> $GITHUB_OUTPUT
+          exit ${err:-0}
