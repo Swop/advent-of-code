@@ -14,12 +14,18 @@ https://adventofcode.com/
   - z3-solver lib (for some days which required advanced problem solvers)
 - graphviz (for some days which required graph visualization)
 
+```shell
+go mod download
+pip install -r requirements.txt
+```
+
 ## Run tests
 This will run all solvers against sample data AND input data, and check expected results.
 The command will also run utils package tests.
 
 **Warning:**
-- The tests require all the input data to be present next to each solver, in a file named `input.txt`, e.g. `2023/day1/input.txt` (they're not included in the repo, as required by AoC rules).
+- The tests require all the input data to be present next to each solver, in a file named `input.txt`, e.g. `2023/day1/input.txt`
+- My input files are included in the repo, but they're `git-crypt` encrypted (to be compliant with AoC rules, which forbid to share publicly input files).
 - For test cases that target input data: the expected results are the ones matching my own input data. If you want to run the tests against your own input data, you'll need to update the expected results in the test cases to match yours (same if the inputs has been rotated).
 
 ### All tests
