@@ -3,7 +3,9 @@ repos:
     rev: v4.5.0
     hooks:
       - id: trailing-whitespace
+        exclude: '^20\d{2}/.*/input\.txt$'
       - id: end-of-file-fixer
+        exclude: '^20\d{2}/.*/input\.txt$'
       - id: check-merge-conflict
       - id: check-added-large-files
       - id: forbid-new-submodules
