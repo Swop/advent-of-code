@@ -35,13 +35,13 @@ jobs:
           python -m pip freeze --local
       - name: setup-git-crypt
         run: |
-          git clone https://github.com/AGWA/git-crypt.git
-          cd git-crypt && make && make install PREFIX=/opt/project
+          git clone https://github.com/AGWA/git-crypt.git && \
+          cd git-crypt && CXXFLAGS='-DOPENSSL_API_COMPAT=0x30000000L' make && make install PREFIX=/opt/project && \
           echo "/opt/project/bin" >> $GITHUB_PATH
       - name: git-crypt-unlock
         run: |
-          echo ${{ secrets.GIT_CRYPT_KEY }} | base64  -d > ./git-crypt-key
-          git-crypt unlock ./git-crypt-key
+          echo ${{ secrets.GIT_CRYPT_KEY }} | base64  -d > ./git-crypt-key && \
+          git-crypt unlock ./git-crypt-key && \
           rm ./git-crypt-key
       - name: run-tests
         run: make test
